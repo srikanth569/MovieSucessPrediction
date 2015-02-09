@@ -9,11 +9,16 @@ import java.util.ArrayList;
  */
 public class TweetGatherer implements IGatherInterface {
 
+    ArrayList<String> mArrayList = null;
+
+    public TweetGatherer(ArrayList<String> arrayList) {
+        mArrayList = arrayList;
+    }
+
     @Override
     public void beginGathering() {
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("American Sniper");
-        TwitterStreamEndpointConsumer twitterStreamEndpointConsumer = new TwitterStreamEndpointConsumer(arrayList);
+
+        TwitterStreamEndpointConsumer twitterStreamEndpointConsumer = new TwitterStreamEndpointConsumer(mArrayList);
         twitterStreamEndpointConsumer.start();
     }
 }
