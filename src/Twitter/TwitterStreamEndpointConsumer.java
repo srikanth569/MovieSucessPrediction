@@ -29,12 +29,12 @@ public class TwitterStreamEndpointConsumer extends Thread {
 
     public TwitterStreamEndpointConsumer(List<String> keyWords) {
         if (mKeyWords == null) {
-            mKeyWords = new ArrayList<String>();
+           this.mKeyWords = new ArrayList<>();
         }
         if (mKeyWords.size() > 0) {
-            mKeyWords.clear();
+            this.mKeyWords.clear();
         }
-        mKeyWords.addAll(keyWords);
+        this.mKeyWords.addAll(keyWords);
     }
 
     public void run() {
@@ -47,11 +47,22 @@ public class TwitterStreamEndpointConsumer extends Thread {
         mOAuthRequest.addHeader("host", HOST_NAME);
         mOAuthRequest.setConnectionKeepAlive(true);
         mOAuthRequest.addHeader("user-agent", STREAM_READER);
-        mOAuthRequest.addBodyParameter("track", getTrackingStrings());
+        String trackingStrings = getTrackingStrings();
+        mOAuthRequest.addBodyParameter("track",trackingStrings);
+        mOAuthRequest.addBodyParameter("language", "en");
         mOAuthService.signRequest(mAccessToken, mOAuthRequest);
         Response response = mOAuthRequest.send();
-        TweetResponseHandler handler = new TweetResponseHandler(response);
-        handler.handleResponse();
+        System.out.print("The response code is " + response.getCode());
+        if (response.getCode() == 420) {
+            System.out.println("Twitter 420 warning, please use caution");
+            System.exit(1);
+        }
+        if (response.getCode() == 200) {
+            trackingStrings = trackingStrings.replace(",","");
+            trackingStrings = trackingStrings.replace(" ","");
+            TweetResponseHandler handler = new TweetResponseHandler(response , trackingStrings);
+            handler.handleResponse();
+        }
     }
 
 
